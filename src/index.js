@@ -3,110 +3,77 @@ class SmartCalculator {
     this.value = initialValue;
     this.prevOp = null;
     this.intermed = null;
+    this.midnum = null;
+    this.mid = null;
+    this.calcul = [initialValue];
     
   }
 
   add(number) {
-    console.log(this.value,"value", number,"number", "ADDITION");
-    this.intermed = number;
+    this.calcul.push("+", number);
+    this.midnum = number;
     this.prevOp = "add";
-    this.value = this.value + number;
-    console.log(this, "added");
-    var res = this.value.valueOf();
     return this;
-    //value.valueof(this);
+  
   }
   subtract(number) {
-    console.log(this.value,"value", number,"number", "SYBTRACTION");
-    this.intermed = number;
+    this.calcul.push("-", number);
     this.prevOp = "subtract";
-    this.value = this.value - number;
-    console.log(this, "subtracted");
+    this.midnum = number;
     return this;
   }
 
   multiply(number) { 
-    console.log(this.value,"value", number,"number", "MYLTIPLICaTION");
-    if(this.prevOp == null) {
-      this.intermed = number;
-      this.value = this.value * number;
-      
-    
-    }
-    else if (this.prevOp == "add") {
-      console.log(this.intermed, "intermed", this.value, "value", number, "number")
-      this.value = (this.value-this.intermed) + (this.intermed*number);
-      //this.prevOp = "myltiply";
-    }
-    else if (this.prevOp == "subtract") {
-      console.log(this.intermed, "intermed", this.value, "value", number, "number")
-      this.value = (this.value+this.intermed) - (this.intermed*number);
-      //this.prevOp = "myltiply";
-    }
-    this.intermed = number;
-    this.prevOp = "myltiply";//this.value = this.value * number;
-    console.log(this, "multiplied");
+    this.calcul.push("*", number);
+    this.prevOp = "multiply";
+    this.midnum = number;
     return this;
   }
 
   devide(number) {
-    console.log(this.value,"value", number,"number", "DIVISION");
-    if(this.prevOp == null) {
-      this.intermed = number;
-      this.value = this.value / number;
-    }
-    else if (this.prevOp == "add") {
-      console.log(this.intermed, "intermed", this.value, "value", number, "number")
-      this.value = (this.value-this.intermed) + (this.intermed/number);
-    
-    }
-    else if (this.prevOp == "subtract") {
-      console.log(this.intermed, "intermed", this.value, "value", number, "number")
-      this.value = (this.value+
-        this.intermed) + (this.intermed/number);
-    
-    }
-    this.intermed = number;
-    this.prevOp = "divide"
-    console.log(this, "divided");
+    this.calcul.push("/", number);
+    this.prevOp = "divide";
+    this.midnum = number;
     return this;
   }
 
   pow(number) {
-    console.log(this.value,"value", number,"number", "POWER");
-    if (this.prevOp == null) {
-    this.value = Math.pow(this.value, number)
-   
-    }
-    else if (this.prevOp == "add") {
-      console.log(this.intermed, "intermed", this.value, "value", number, "number","111")
-      this.value = (this.value-this.intermed) + Math.pow(this.intermed, number);
+    if(this.prevOp == null && this.midnum == null) {
+      this.calcul = [];
+      this.calcul.push("Math.pow("+this.value+","+number+')' );
+      this.prevOp = "pow"; 
+      console.log(this.calcul, "FIRST POW")
+     }
      
-    }
-    else if (this.prevOp == "subtract") {
-      console.log(this.intermed, "intermed", this.value, "value", number, "number","222")
-      this.value = (this.value+this.intermed) - Math.pow(this.intermed, number);
-     
-    }
-    
-    else if (this.prevOp == "myltiply") {
-      console.log(this.intermed, "intermed", this.value, "value", number, "number","333")
-      this.value = (this.value/this.intermed) * Math.pow(this.intermed, number);
+    if(this.prevOp !== "pow"&& this.midnum !== null) {
+     this.mid = number;
+     this.calcul = this.calcul.slice(0,this.calcul.length-1);
+     this.calcul.push("Math.pow("+this.midnum+","+number+')' );
+     this.prevOp = "pow";
+     console.log(this.calcul, "SECOND POW")
+     return this;
+
       
     }
-    else if (this.prevOp == "divide") {
-      console.log(this.intermed, "intermed", this.value, "value", number, "number","444")
-      this.value = (this.value*this.intermed) / Math.pow(this.intermed, number);
-      
+    if(this.prevOp == "pow"&& this.midnum !== null) {
+      this.calcul = this.calcul.slice(0,this.calcul.length-1);
+      this.intermed = ("Math.pow("+this.mid+","+number+')');
+      this.calcul.push("Math.pow("+this.midnum+","+this.intermed+')' );
+      this.mid = number;
+      console.log(this.calcul, "THIRD POW")
+
+
     }
-    
-    this.prevOp = 'power';
-    console.log(this, "powered");
+  
     return this;
   }
   valueOf() {
-    console.log(this.value)
-    return this.value
+    this.calcul = this.calcul.join("")
+    console.log(this.calcul)
+    console.log(eval(this.calcul), "attempt")
+   // console.log(this.value)
+   if (!(eval(this.calcul))) {return 0}
+    return eval(this.calcul)
   }
   
 };
